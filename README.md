@@ -1,7 +1,5 @@
 # Terraform LDAP 
 
-[![CircleCI](https://circleci.com/gh/Pryz/terraform-provider-ldap.svg?style=svg)](https://circleci.com/gh/Pryz/terraform-provider-ldap)
-
 ## Installation
 
 You can easily install the latest version with the following :
