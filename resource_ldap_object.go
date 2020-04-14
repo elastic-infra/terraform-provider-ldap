@@ -420,7 +420,7 @@ func computeDeltas(os, ns *schema.Set) (added, changed, removed []ldap.PartialAt
 			// been added back, and there is no further value under the same
 			// name among those that were untouched; this means that it has
 			// been dropped and must go among the RemovedAttributes
-			log.Printf("[DEBUG} ldap_object::deltas - dropping attribute %q", k)
+			log.Printf("[DEBUG] ldap_object::deltas - dropping attribute %q", k)
 			removed = append(removed, ldap.PartialAttribute{
 				Type: k,
 				Vals: []string{},
@@ -448,7 +448,7 @@ func computeDeltas(os, ns *schema.Set) (added, changed, removed []ldap.PartialAt
 				Type: k,
 				Vals: values,
 			})
-			log.Printf("[DEBUG} ldap_object::deltas - adding new attribute %q with values %v", k, values)
+			log.Printf("[DEBUG] ldap_object::deltas - adding new attribute %q with values %v", k, values)
 		} else {
 			ck.Add(k)
 		}
@@ -472,7 +472,7 @@ func computeDeltas(os, ns *schema.Set) (added, changed, removed []ldap.PartialAt
 			Type: k,
 			Vals: values,
 		})
-		log.Printf("[DEBUG} ldap_object::deltas - changing attribute %q with values %v", k, values)
+		log.Printf("[DEBUG] ldap_object::deltas - changing attribute %q with values %v", k, values)
 	}
 	return
 }
