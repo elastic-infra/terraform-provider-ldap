@@ -1,60 +1,60 @@
-# Terraform LDAP 
+# Terraform LDAP
 
 ## Installation
 
-You can easily install the latest version with the following :
+You can easily install the latest version with the following:
 
-```
-go get -u github.com/Pryz/terraform-provider-ldap
+```shell
+go get -u github.com/elastic-infra/terraform-provider-ldap
 ```
 
-Then add the plugin to your local `.terraformrc` :
+Then add the plugin to your local `.terraformrc`:
 
-```
+```shell
 cat >> ~/.terraformrc <<EOF
 providers {
-    ldap = "${GOPATH}/bin/terraform-provider-ldap"
+  ldap = "${GOPATH}/bin/terraform-provider-ldap"
 }
 EOF
 ```
 
 ## Provider example
 
-```
+```hcl
 provider "ldap" {
-    ldap_host = "ldap.example.org"
-    ldap_port = 389
-    use_tls = true
-    bind_user = "cn=admin,dc=example,dc=com"
-    bind_password = "admin"
+  ldap_host     = "ldap.example.org"
+  ldap_port     = 389
+  use_tls       = true
+  bind_user     = "cn=admin,dc=example,dc=com"
+  bind_password = "admin"
 }
 ```
 
 ## Resource LDAP Object example
 
-```
+```hcl
 resource "ldap_object" "foo" {
-    # DN must be complete (no RDN!)
-    dn = "uid=foo,dc=example,dc=com"
+  # DN must be complete (no RDN!)
+  dn = "uid=foo,dc=example,dc=com"
 
-    # classes are specified as an array
-    object_classes = [
-        "inetOrgPerson",
-        "posixAccount",
-    ]
+  # classes are specified as an array
+  object_classes = [
+    "inetOrgPerson",
+    "posixAccount",
+  ]
 
-    # attributes are specified as a set of 1-element maps
-    attributes = [
-        { sn              = "10" },
-        { cn              = "bar" },
-        { uidNumber       = "1234" },
-        { gidNumber       = "1234" },
-        { homeDirectory   = "/home/billy" },
-        { loginShell      = "/bin/bash" },
-        # when an attribute has multiple values, it must be specified multiple times
-        { mail            = "billy@example.com" },
-        { mail            = "admin@example.com" },
-    ]
+  # attributes are specified as a set of 1-element maps
+  attributes = [
+    { sn              = "10" },
+    { cn              = "bar" },
+    { uidNumber       = "1234" },
+    { gidNumber       = "1234" },
+    { homeDirectory   = "/home/billy" },
+    { loginShell      = "/bin/bash" },
+    # when an attribute has multiple values, it must be specified multiple times
+    { mail            = "billy@example.com" },
+    { mail            = "admin@example.com" },
+  ]
 }
 ```
 
@@ -77,7 +77,7 @@ remote LDAP server due to it missing in the local ```.tf``` files.
 In order to have the plugin generate this file, put the name of the output file
 (which must *not* exist on disk) in the ```TF_LDAP_IMPORTER_PATH``` environment 
 variable, like this:
-```
+```shell
 $> export TF_LDAP_IMPORTER_PATH=a123456.tf 
 $> terraform import ldap_object.a123456 uid=a123456,ou=users,dc=example,dc=com
 ```
