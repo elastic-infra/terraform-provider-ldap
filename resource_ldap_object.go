@@ -27,20 +27,20 @@ func resourceLDAPObject() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"dn": &schema.Schema{
+			"dn": {
 				Type:        schema.TypeString,
 				Description: "The Distinguished Name (DN) of the object, as the concatenation of its RDN (unique among siblings) and its parent's DN.",
 				Required:    true,
 				ForceNew:    true,
 			},
-			"object_classes": &schema.Schema{
+			"object_classes": {
 				Type:        schema.TypeSet,
 				Description: "The set of classes this object conforms to (e.g. organizationalUnit, inetOrgPerson).",
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Set:         schema.HashString,
 				Required:    true,
 			},
-			"attributes": &schema.Schema{
+			"attributes": {
 				Type:        schema.TypeSet,
 				Description: "The map of attributes of this object; each attribute can be multi-valued.",
 				Set:         attributeHash,
@@ -223,7 +223,7 @@ func resourceLDAPObjectUpdate(d *schema.ResourceData, meta interface{}) error {
 		}
 		log.Printf("[DEBUG] ldap_object::update - updating classes of %q, new value: %v", d.Id(), classes)
 		request.ReplaceAttributes = []ldap.PartialAttribute{
-			ldap.PartialAttribute{
+			{
 				Type: "objectClass",
 				Vals: classes,
 			},
