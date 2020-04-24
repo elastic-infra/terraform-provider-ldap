@@ -468,7 +468,7 @@ func computeDeltas(os, ns *schema.Set) (added, changed, removed []ldap.PartialAt
 				}
 			}
 		}
-		changed = append(added, ldap.PartialAttribute{
+		changed = append(changed, ldap.PartialAttribute{
 			Type: k,
 			Vals: values,
 		})
