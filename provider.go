@@ -24,8 +24,8 @@ func Provider() terraform.ResourceProvider {
 			"use_tls": {
 				Type:        schema.TypeBool,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("LDAP_USE_TLS", true),
 				Description: "Use TLS to secure the connection (default: true).",
+				Removed:     "use_tls attribute has been rename to start_tls.",
 			},
 			"bind_user": {
 				Type:        schema.TypeString,
@@ -38,6 +38,24 @@ func Provider() terraform.ResourceProvider {
 				Required:    true,
 				DefaultFunc: schema.EnvDefaultFunc("LDAP_BIND_PASSWORD", nil),
 				Description: "Password to authenticate the Bind user.",
+			},
+			"start_tls": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("LDAP_START_TLS", false),
+				Description: "Upgrade TLS to secure the connection (default: false).",
+			},
+			"tls": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("LDAP_TLS", false),
+				Description: "Enable TLS encryption for LDAP (LDAPS) (default: false).",
+			},
+			"tls_insecure": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("LDAP_TLS_INSECURE", false),
+				Description: "Don't verify server TLS certificate (default: false).",
 			},
 		},
 
@@ -53,9 +71,11 @@ func configureProvider(d *schema.ResourceData) (interface{}, error) {
 	config := Config{
 		LDAPHost:     d.Get("ldap_host").(string),
 		LDAPPort:     d.Get("ldap_port").(int),
-		UseTLS:       d.Get("use_tls").(bool),
 		BindUser:     d.Get("bind_user").(string),
 		BindPassword: d.Get("bind_password").(string),
+		StartTLS:     d.Get("start_tls").(bool),
+		TLS:          d.Get("tls").(bool),
+		TLSInsecure:  d.Get("tls_insecure").(bool),
 	}
 
 	connection, err := config.initiateAndBind()

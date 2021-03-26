@@ -11,34 +11,53 @@ import (
 type Config struct {
 	LDAPHost     string
 	LDAPPort     int
-	UseTLS       bool
 	BindUser     string
 	BindPassword string
+
+	StartTLS    bool
+	TLS         bool
+	TLSInsecure bool
 }
 
 func (c *Config) initiateAndBind() (*ldap.Conn, error) {
-	// TODO: should we handle UDP ?
-	connection, err := ldap.Dial("tcp", fmt.Sprintf("%s:%d", c.LDAPHost, c.LDAPPort))
+	conn, err := c.dial()
 	if err != nil {
 		return nil, err
 	}
 
-	// handle TLS
-	if c.UseTLS {
-		//TODO: Finish the TLS integration
-		err = connection.StartTLS(&tls.Config{InsecureSkipVerify: true})
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	// bind to current connection
-	err = connection.Bind(c.BindUser, c.BindPassword)
+	err = conn.Bind(c.BindUser, c.BindPassword)
 	if err != nil {
-		connection.Close()
+		conn.Close()
 		return nil, err
 	}
 
 	// return the LDAP connection
-	return connection, nil
+	return conn, nil
+}
+
+func (c *Config) dial() (*ldap.Conn, error) {
+	uri := fmt.Sprintf("%s:%d", c.LDAPHost, c.LDAPPort)
+
+	if c.TLS {
+		return ldap.DialTLS("tcp", uri, &tls.Config{
+			ServerName:         c.LDAPHost,
+			InsecureSkipVerify: c.TLSInsecure,
+		})
+	}
+
+	conn, err := ldap.Dial("tcp", uri)
+	if err != nil {
+		return nil, err
+	}
+
+	if c.StartTLS {
+		err = conn.StartTLS(&tls.Config{
+			InsecureSkipVerify: true,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+	return conn, err
 }
