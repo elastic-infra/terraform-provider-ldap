@@ -10,8 +10,8 @@ import (
 
 	"os"
 
+	"github.com/go-ldap/ldap/v3"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"gopkg.in/ldap.v2"
 )
 
 func resourceLDAPObject() *schema.Resource {
@@ -157,7 +157,7 @@ func resourceLDAPObjectCreate(d *schema.ResourceData, meta interface{}) error {
 
 	log.Printf("[DEBUG] ldap_object::create - creating a new object under %q", dn)
 
-	request := ldap.NewAddRequest(dn)
+	request := ldap.NewAddRequest(dn, []ldap.Control{})
 
 	// retrieve classe from HCL
 	objectClasses := []string{}
@@ -213,7 +213,7 @@ func resourceLDAPObjectUpdate(d *schema.ResourceData, meta interface{}) error {
 
 	log.Printf("[DEBUG] ldap_object::update - performing update on %q", d.Id())
 
-	request := ldap.NewModifyRequest(d.Id())
+	request := ldap.NewModifyRequest(d.Id(), []ldap.Control{})
 
 	// handle objectClasses
 	if d.HasChange("object_classes") {
@@ -222,10 +222,13 @@ func resourceLDAPObjectUpdate(d *schema.ResourceData, meta interface{}) error {
 			classes = append(classes, oc.(string))
 		}
 		log.Printf("[DEBUG] ldap_object::update - updating classes of %q, new value: %v", d.Id(), classes)
-		request.ReplaceAttributes = []ldap.PartialAttribute{
+		request.Changes = []ldap.Change{
 			{
-				Type: "objectClass",
-				Vals: classes,
+				Operation: ldap.ReplaceAttribute,
+				Modification: ldap.PartialAttribute{
+					Type: "objectClass",
+					Vals: classes,
+				},
 			},
 		}
 	}
@@ -239,19 +242,30 @@ func resourceLDAPObjectUpdate(d *schema.ResourceData, meta interface{}) error {
 		added, changed, removed := computeDeltas(o.(*schema.Set), n.(*schema.Set))
 		if len(added) > 0 {
 			log.Printf("[DEBUG] ldap_object::update - %d attributes added", len(added))
-			request.AddAttributes = added
+			for _, attr := range added {
+				request.Changes = append(request.Changes, ldap.Change{
+					Operation:    ldap.AddAttribute,
+					Modification: attr,
+				})
+			}
 		}
 		if len(changed) > 0 {
 			log.Printf("[DEBUG] ldap_object::update - %d attributes changed", len(changed))
-			if request.ReplaceAttributes == nil {
-				request.ReplaceAttributes = changed
-			} else {
-				request.ReplaceAttributes = append(request.ReplaceAttributes, changed...)
+			for _, attr := range changed {
+				request.Changes = append(request.Changes, ldap.Change{
+					Operation:    ldap.ReplaceAttribute,
+					Modification: attr,
+				})
 			}
 		}
 		if len(removed) > 0 {
 			log.Printf("[DEBUG] ldap_object::update - %d attributes removed", len(removed))
-			request.DeleteAttributes = removed
+			for _, attr := range removed {
+				request.Changes = append(request.Changes, ldap.Change{
+					Operation:    ldap.DeleteAttribute,
+					Modification: attr,
+				})
+			}
 		}
 	}
 

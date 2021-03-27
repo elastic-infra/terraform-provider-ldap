@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"fmt"
 
-	"gopkg.in/ldap.v2"
+	"github.com/go-ldap/ldap/v3"
 )
 
 // Config is the set of parameters needed to configure the LDAP provider.
