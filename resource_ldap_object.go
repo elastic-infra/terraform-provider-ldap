@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"hash/crc32"
 	"log"
 
 	"fmt"
@@ -9,7 +10,6 @@ import (
 
 	"os"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/hashcode"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"gopkg.in/ldap.v2"
 )
@@ -366,7 +366,7 @@ func attributeHash(v interface{}) int {
 
 	// In case of calculated fields, v might be nil.
 	if !ok {
-		return hashcode.String("nil")
+		return String("nil")
 	}
 
 	var buffer bytes.Buffer
@@ -376,8 +376,25 @@ func attributeHash(v interface{}) int {
 	}
 	buffer.WriteRune('}')
 	text := buffer.String()
-	hash := hashcode.String(text)
+	hash := String(text)
 	return hash
+}
+
+// String hashes a string to a unique hashcode.
+//
+// crc32 returns a uint32, but for our use we need
+// and non negative integer. Here we cast to an integer
+// and invert it if the result is negative.
+func String(s string) int {
+	v := int(crc32.ChecksumIEEE([]byte(s)))
+	if v >= 0 {
+		return v
+	}
+	if -v >= 0 {
+		return -v
+	}
+	// v == MinInt
+	return 0
 }
 
 func printAttributes(prefix string, attributes interface{}) string {
