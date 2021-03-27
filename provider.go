@@ -2,11 +2,10 @@ package main
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 // Provider creates a new LDAP provider.
-func Provider() terraform.ResourceProvider {
+func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"ldap_host": {
@@ -25,7 +24,7 @@ func Provider() terraform.ResourceProvider {
 				Type:        schema.TypeBool,
 				Optional:    true,
 				Description: "Use TLS to secure the connection (default: true).",
-				Removed:     "use_tls attribute has been rename to start_tls.",
+				Deprecated:  "use_tls attribute has been rename to start_tls.",
 			},
 			"bind_user": {
 				Type:        schema.TypeString,
