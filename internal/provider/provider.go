@@ -68,7 +68,7 @@ func Provider() *schema.Provider {
 }
 
 func configureProvider(d *schema.ResourceData) (interface{}, error) {
-	config := client.Config{
+	config := &client.Config{
 		LDAPHost:     d.Get("ldap_host").(string),
 		LDAPPort:     d.Get("ldap_port").(int),
 		BindUser:     d.Get("bind_user").(string),
@@ -78,7 +78,7 @@ func configureProvider(d *schema.ResourceData) (interface{}, error) {
 		TLSInsecure:  d.Get("tls_insecure").(bool),
 	}
 
-	connection, err := config.InitiateAndBind()
+	connection, err := client.DialAndBind(config)
 	if err != nil {
 		return nil, err
 	}
