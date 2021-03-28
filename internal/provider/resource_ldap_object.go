@@ -411,28 +411,28 @@ func printAttributes(prefix string, attributes interface{}) string {
 
 func computeDeltas(os, ns *schema.Set) (added, changed, removed []ldap.PartialAttribute) {
 
-	rk := set.NewSet() // names of removed attributes
+	rk := set.New() // names of removed attributes
 	for _, v := range os.Difference(ns).List() {
 		for k := range v.(map[string]interface{}) {
 			rk.Add(k)
 		}
 	}
 
-	ak := set.NewSet() // names of added attributes
+	ak := set.New() // names of added attributes
 	for _, v := range ns.Difference(os).List() {
 		for k := range v.(map[string]interface{}) {
 			ak.Add(k)
 		}
 	}
 
-	kk := set.NewSet() // names of kept attributes
+	kk := set.New() // names of kept attributes
 	for _, v := range ns.Intersection(os).List() {
 		for k := range v.(map[string]interface{}) {
 			kk.Add(k)
 		}
 	}
 
-	ck := set.NewSet() // names of changed attributes
+	ck := set.New() // names of changed attributes
 
 	// loop over remove attributes' names
 	for _, k := range rk.List() {
