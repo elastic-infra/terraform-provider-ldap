@@ -1,8 +1,7 @@
-package main
+package provider
 
 import (
 	"bytes"
-	"hash/crc32"
 	"log"
 
 	"fmt"
@@ -10,6 +9,8 @@ import (
 
 	"os"
 
+	"github.com/elastic-infra/terraform-provider-ldap/internal/helper/hashcode"
+	"github.com/elastic-infra/terraform-provider-ldap/internal/helper/set"
 	"github.com/go-ldap/ldap/v3"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -380,7 +381,7 @@ func attributeHash(v interface{}) int {
 
 	// In case of calculated fields, v might be nil.
 	if !ok {
-		return String("nil")
+		return hashcode.String("nil")
 	}
 
 	var buffer bytes.Buffer
@@ -390,25 +391,8 @@ func attributeHash(v interface{}) int {
 	}
 	buffer.WriteRune('}')
 	text := buffer.String()
-	hash := String(text)
+	hash := hashcode.String(text)
 	return hash
-}
-
-// String hashes a string to a unique hashcode.
-//
-// crc32 returns a uint32, but for our use we need
-// and non negative integer. Here we cast to an integer
-// and invert it if the result is negative.
-func String(s string) int {
-	v := int(crc32.ChecksumIEEE([]byte(s)))
-	if v >= 0 {
-		return v
-	}
-	if -v >= 0 {
-		return -v
-	}
-	// v == MinInt
-	return 0
 }
 
 func printAttributes(prefix string, attributes interface{}) string {
@@ -427,28 +411,28 @@ func printAttributes(prefix string, attributes interface{}) string {
 
 func computeDeltas(os, ns *schema.Set) (added, changed, removed []ldap.PartialAttribute) {
 
-	rk := NewSet() // names of removed attributes
+	rk := set.NewSet() // names of removed attributes
 	for _, v := range os.Difference(ns).List() {
 		for k := range v.(map[string]interface{}) {
 			rk.Add(k)
 		}
 	}
 
-	ak := NewSet() // names of added attributes
+	ak := set.NewSet() // names of added attributes
 	for _, v := range ns.Difference(os).List() {
 		for k := range v.(map[string]interface{}) {
 			ak.Add(k)
 		}
 	}
 
-	kk := NewSet() // names of kept attributes
+	kk := set.NewSet() // names of kept attributes
 	for _, v := range ns.Intersection(os).List() {
 		for k := range v.(map[string]interface{}) {
 			kk.Add(k)
 		}
 	}
 
-	ck := NewSet() // names of changed attributes
+	ck := set.NewSet() // names of changed attributes
 
 	// loop over remove attributes' names
 	for _, k := range rk.List() {

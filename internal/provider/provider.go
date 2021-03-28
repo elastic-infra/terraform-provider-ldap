@@ -1,6 +1,7 @@
-package main
+package provider
 
 import (
+	"github.com/elastic-infra/terraform-provider-ldap/internal/helper/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -67,7 +68,7 @@ func Provider() *schema.Provider {
 }
 
 func configureProvider(d *schema.ResourceData) (interface{}, error) {
-	config := Config{
+	config := client.Config{
 		LDAPHost:     d.Get("ldap_host").(string),
 		LDAPPort:     d.Get("ldap_port").(int),
 		BindUser:     d.Get("bind_user").(string),
@@ -77,7 +78,7 @@ func configureProvider(d *schema.ResourceData) (interface{}, error) {
 		TLSInsecure:  d.Get("tls_insecure").(bool),
 	}
 
-	connection, err := config.initiateAndBind()
+	connection, err := config.InitiateAndBind()
 	if err != nil {
 		return nil, err
 	}

@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"crypto/tls"
@@ -19,7 +19,7 @@ type Config struct {
 	TLSInsecure bool
 }
 
-func (c *Config) initiateAndBind() (*ldap.Conn, error) {
+func (c *Config) InitiateAndBind() (*ldap.Conn, error) {
 	conn, err := c.dial()
 	if err != nil {
 		return nil, err
