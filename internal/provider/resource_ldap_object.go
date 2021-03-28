@@ -2,12 +2,10 @@ package provider
 
 import (
 	"bytes"
-	"log"
-
 	"fmt"
-	"strings"
-
+	"log"
 	"os"
+	"strings"
 
 	"github.com/elastic-infra/terraform-provider-ldap/internal/helper/hashcode"
 	"github.com/elastic-infra/terraform-provider-ldap/internal/helper/set"
