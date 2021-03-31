@@ -58,6 +58,8 @@ func resourceLDAPObject() *schema.Resource {
 				Optional: true,
 			},
 		},
+
+		Description: "Provides a LDAP Object.",
 	}
 }
 
