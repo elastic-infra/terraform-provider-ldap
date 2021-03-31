@@ -19,4 +19,4 @@ services:
       PHPLDAPADMIN_LDAP_HOSTS: "openldap"
     image: osixia/phpldapadmin:latest
     ports:
-      - "6443:443"
+      - "8443:443"

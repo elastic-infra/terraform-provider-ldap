@@ -1,10 +1,18 @@
 /*
  * LDAP is the OpenLDAP server.
  */
+terraform {
+  required_providers {
+    ldap = {
+      source  = "elastic-infra/ldap"
+      version = "~> 2.0"
+    }
+  }
+}
+
 provider "ldap" {
   ldap_host     = "localhost"
   ldap_port     = 389
-  use_tls       = false
   bind_user     = "cn=admin,dc=example,dc=com"
   bind_password = "admin"
 }
