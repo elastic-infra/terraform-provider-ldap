@@ -24,7 +24,6 @@ EOF
 provider "ldap" {
   ldap_host     = "ldap.example.org"
   ldap_port     = 389
-  use_tls       = true
   bind_user     = "cn=admin,dc=example,dc=com"
   bind_password = "admin"
 }

@@ -44,4 +44,3 @@ provider "ldap" {
 - **start_tls** (Boolean) Upgrade TLS to secure the connection (default: false).
 - **tls** (Boolean) Enable TLS encryption for LDAP (LDAPS) (default: false).
 - **tls_insecure** (Boolean) Don't verify server TLS certificate (default: false).
-- **use_tls** (Boolean, Deprecated) Use TLS to secure the connection (default: true).
