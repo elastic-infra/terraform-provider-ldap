@@ -21,12 +21,6 @@ func Provider() *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("LDAP_PORT", 389),
 				Description: "The LDAP protocol port (default: 389).",
 			},
-			"use_tls": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				Description: "Use TLS to secure the connection (default: true).",
-				Deprecated:  "use_tls attribute has been rename to start_tls.",
-			},
 			"bind_user": {
 				Type:        schema.TypeString,
 				Required:    true,
